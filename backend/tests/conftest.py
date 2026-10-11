@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 # Ensure test settings are active
 os.environ["ENVIRONMENT"] = "test"
 os.environ["DEBUG"] = "True"
+os.environ["ALLOW_SQLITE_FALLBACK"] = "True"
 
 from app.database import Base, get_db
 from app.main import app

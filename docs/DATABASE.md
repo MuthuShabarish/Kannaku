@@ -177,50 +177,116 @@ $$\text{New Average Cost} = \frac{(\text{Current Qty} \times \text{Current Avg C
   - `tax_rate`: NUMERIC(6, 4) DEFAULT 0
   - `total_price`: NUMERIC(14, 4) NOT NULL
 
-### 3.6. Purchases & Suppliers
-- `purchases`:
-  - `id`: UUID (PK), `business_id`: UUID (FK)
-  - `supplier_id`: UUID (FK -> parties.id)
-  - `warehouse_id`: UUID (FK -> warehouses.id)
-  - `invoice_number`: VARCHAR(100) NOT NULL
-  - `total_amount`: NUMERIC(14, 4) NOT NULL
-  - `paid_amount`: NUMERIC(14, 4) NOT NULL DEFAULT 0
-  - `status`: VARCHAR(30) NOT NULL ('received', 'partial', 'cancelled')
+### 3.6. Purchases, Suppliers & AP Ledger
+- `suppliers`:
+  - `id`: UUID (PK), `business_id`: UUID (FK -> businesses.id ON DELETE CASCADE)
+  - `name`: VARCHAR(255) NOT NULL
+  - `phone`: VARCHAR(20) NULLABLE
+  - `email`: VARCHAR(255) NULLABLE
+  - `address`: TEXT NULLABLE
+  - `notes`: TEXT NULLABLE
+  - `is_active`: BOOLEAN DEFAULT TRUE
+  - `current_balance`: NUMERIC(14, 4) NOT NULL DEFAULT 0 (Accounts Payable balance owed to supplier)
+  - `created_at`, `updated_at`: TIMESTAMPTZ NOT NULL
+  - Constraint: UNIQUE `(business_id, name)`
+- `supplier_ledger_entries`:
+  - `id`: UUID (PK), `business_id`: UUID (FK -> businesses.id ON DELETE CASCADE)
+  - `supplier_id`: UUID (FK -> suppliers.id ON DELETE RESTRICT)
+  - `entry_type`: VARCHAR(30) NOT NULL ('credit_purchase', 'payment_made')
+  - `amount`: NUMERIC(14, 4) NOT NULL
+  - `balance_after`: NUMERIC(14, 4) NOT NULL
+  - `purchase_id`: UUID (FK -> purchases.id NULLABLE)
+  - `payment_id`: UUID (FK -> payments.id NULLABLE)
+  - `notes`: TEXT NULLABLE
   - `created_at`: TIMESTAMPTZ NOT NULL
+- `purchases`:
+  - `id`: UUID (PK), `business_id`: UUID (FK -> businesses.id ON DELETE CASCADE)
+  - `supplier_id`: UUID (FK -> suppliers.id ON DELETE RESTRICT)
+  - `invoice_number`: VARCHAR(100) NOT NULL (Format: `PUR-YYYYMMDD-XXXX`)
+  - `supplier_invoice_ref`: VARCHAR(100) NULLABLE (Supplier's own bill/challan number)
+  - `purchase_date`: TIMESTAMPTZ NOT NULL
+  - `status`: VARCHAR(30) NOT NULL DEFAULT 'received' ('received', 'cancelled')
+  - `payment_status`: VARCHAR(30) NOT NULL DEFAULT 'unpaid' ('paid', 'partial', 'unpaid')
+  - `subtotal_amount`: NUMERIC(14, 4) NOT NULL DEFAULT 0
+  - `discount_amount`: NUMERIC(14, 4) NOT NULL DEFAULT 0 (Overall invoice-level discount)
+  - `tax_amount`: NUMERIC(14, 4) NOT NULL DEFAULT 0
+  - `total_amount`: NUMERIC(14, 4) NOT NULL DEFAULT 0
+  - `paid_amount`: NUMERIC(14, 4) NOT NULL DEFAULT 0
+  - `outstanding_amount`: NUMERIC(14, 4) NOT NULL DEFAULT 0 (total_amount - paid_amount)
+  - `payment_method`: VARCHAR(30) NOT NULL DEFAULT 'credit' ('cash', 'upi', 'card', 'bank_transfer', 'credit', 'split')
+  - `notes`: TEXT NULLABLE
+  - `idempotency_key`: VARCHAR(100) NULLABLE
+  - `created_by_user_id`: UUID (FK -> users.id NULLABLE)
+  - `created_at`, `updated_at`: TIMESTAMPTZ NOT NULL
+  - Constraints: UNIQUE `(business_id, invoice_number)`, UNIQUE `(business_id, idempotency_key)`
 - `purchase_items`:
-  - `id`: UUID (PK), `purchase_id`: UUID (FK -> purchases.id)
-  - `product_id`: UUID (FK -> products.id)
+  - `id`: UUID (PK), `purchase_id`: UUID (FK -> purchases.id ON DELETE CASCADE)
+  - `product_id`: UUID (FK -> products.id ON DELETE RESTRICT)
+  - `product_name`: VARCHAR(255) NOT NULL (Immutable historical snapshot)
+  - `product_sku`: VARCHAR(100) NULLABLE (Immutable historical snapshot)
+  - `unit_of_measure`: VARCHAR(20) NOT NULL DEFAULT 'piece'
   - `quantity`: NUMERIC(14, 4) NOT NULL
-  - `unit_purchase_cost`: NUMERIC(14, 4) NOT NULL
+  - `unit_cost`: NUMERIC(14, 4) NOT NULL
+  - `discount_amount`: NUMERIC(14, 4) NOT NULL DEFAULT 0 (Line-level discount)
+  - `tax_rate`: NUMERIC(6, 4) NOT NULL DEFAULT 0
   - `total_cost`: NUMERIC(14, 4) NOT NULL
+  - `effective_landed_cost`: NUMERIC(14, 4) NOT NULL (Unit cost after distributed line + invoice discounts)
+  - `created_at`: TIMESTAMPTZ NOT NULL
 
 ### 3.7. Payments, Expenses & Cash Drawer
 - `payments`:
-  - `id`: UUID (PK), `business_id`: UUID (FK)
+  - `id`: UUID (PK), `business_id`: UUID (FK -> businesses.id ON DELETE CASCADE)
   - `party_id`: UUID (FK -> parties.id NULLABLE)
   - `reference_sale_id`: UUID (FK -> sales.id NULLABLE)
-  - `reference_purchase_id`: UUID (FK -> purchases.id NULLABLE)
+  - `purchase_id`: UUID (FK -> purchases.id NULLABLE)
+  - `supplier_id`: UUID (FK -> suppliers.id NULLABLE)
   - `payment_direction`: VARCHAR(20) NOT NULL ('inflow' / 'outflow')
   - `payment_mode`: VARCHAR(30) NOT NULL ('cash', 'upi', 'card', 'bank_transfer')
   - `amount`: NUMERIC(14, 4) NOT NULL
-  - `payment_date`: TIMESTAMPTZ NOT NULL
+- `expense_categories`:
+  - `id`: UUID (PK), `business_id`: UUID (FK -> businesses.id ON DELETE CASCADE)
+  - `name`: VARCHAR(100) NOT NULL
+  - `description`: TEXT NULLABLE
+  - `is_system_default`: BOOLEAN DEFAULT FALSE
+  - `is_active`: BOOLEAN DEFAULT TRUE
+  - `created_at`, `updated_at`: TIMESTAMPTZ NOT NULL
+  - Constraint: UNIQUE `(business_id, name)`
 - `expenses`:
-  - `id`: UUID (PK), `business_id`: UUID (FK)
-  - `category`: VARCHAR(100) NOT NULL (e.g., Rent, Electricity, Tea/Snacks, Transport, Wages)
+  - `id`: UUID (PK), `business_id`: UUID (FK -> businesses.id ON DELETE CASCADE)
+  - `category_id`: UUID (FK -> expense_categories.id ON DELETE RESTRICT)
+  - `expense_number`: VARCHAR(100) NOT NULL (`EXP-YYYYMMDD-XXXX`)
   - `amount`: NUMERIC(14, 4) NOT NULL
-  - `payment_mode`: VARCHAR(30) NOT NULL ('cash', 'upi', 'bank')
-  - `notes`: TEXT
-  - `created_by_user_id`: UUID (FK -> users.id)
-  - `created_at`: TIMESTAMPTZ NOT NULL
-- `cash_sessions` (Daily Closing / Register Drawer):
-  - `id`: UUID (PK), `business_id`: UUID (FK), `branch_id`: UUID (FK)
-  - `user_id`: UUID (FK -> users.id)
-  - `opening_cash`: NUMERIC(14, 4) NOT NULL
-  - `expected_cash`: NUMERIC(14, 4) NOT NULL (Calculated from Cash Sales + Debt Inflow - Expenses)
-  - `actual_cash_counted`: NUMERIC(14, 4) NULLABLE
-  - `cash_difference`: NUMERIC(14, 4) NULLABLE (Actual - Expected)
-  - `status`: VARCHAR(20) NOT NULL ('open', 'closed')
-  - `opened_at`: TIMESTAMPTZ NOT NULL, `closed_at`: TIMESTAMPTZ NULLABLE
+  - `expense_date`: TIMESTAMPTZ NOT NULL
+  - `payment_method`: VARCHAR(30) NOT NULL ('cash', 'upi', 'card', 'bank_transfer')
+  - `payment_status`: VARCHAR(20) NOT NULL DEFAULT 'paid' ('paid', 'unpaid', 'voided')
+  - `payee`: VARCHAR(255) NULLABLE
+  - `description`: TEXT NOT NULL
+  - `reference_number`: VARCHAR(100) NULLABLE
+  - `idempotency_key`: VARCHAR(100) NULLABLE
+  - `created_by_user_id`: UUID (FK -> users.id ON DELETE SET NULL)
+  - `voided_at`: TIMESTAMPTZ NULLABLE
+  - `voided_by_user_id`: UUID (FK -> users.id ON DELETE SET NULL)
+  - `void_reason`: TEXT NULLABLE
+  - `created_at`, `updated_at`: TIMESTAMPTZ NOT NULL
+  - Constraints: UNIQUE `(business_id, expense_number)`, UNIQUE `(business_id, idempotency_key)`
+- `daily_cash_closings` (Daily Physical Cash Drawer Closing & Reconciliation):
+  - `id`: UUID (PK), `business_id`: UUID (FK -> businesses.id ON DELETE CASCADE), `branch_id`: UUID (FK -> branches.id ON DELETE CASCADE NULLABLE)
+  - `closing_date`: DATE NOT NULL (Business-local calendar date)
+  - `session_start`: TIMESTAMPTZ NOT NULL, `session_end`: TIMESTAMPTZ NOT NULL (Cutoff range)
+  - `opening_cash`: NUMERIC(14, 4) NOT NULL DEFAULT 0.0000 (Opening float balance)
+  - `cash_inflows`: NUMERIC(14, 4) NOT NULL DEFAULT 0.0000 (Physical cash legs from completed sales and Khata collections)
+  - `cash_outflows`: NUMERIC(14, 4) NOT NULL DEFAULT 0.0000 (Physical cash legs from purchases, supplier settlements, and paid expenses)
+  - `expected_cash`: NUMERIC(14, 4) NOT NULL (opening_cash + cash_inflows - cash_outflows)
+  - `actual_cash`: NUMERIC(14, 4) NOT NULL (Physically counted drawer cash)
+  - `difference`: NUMERIC(14, 4) NOT NULL (actual_cash - expected_cash; positive = over, negative = short, 0 = reconciled)
+  - `notes`: TEXT NULLABLE (Cashier audit comments)
+  - `status`: VARCHAR(30) NOT NULL DEFAULT 'closed' ('closed', 'reopened')
+  - `closed_by_user_id`: UUID (FK -> users.id ON DELETE SET NULL)
+  - `reopened_by_user_id`: UUID (FK -> users.id ON DELETE SET NULL NULLABLE)
+  - `reopened_at`: TIMESTAMPTZ NULLABLE
+  - `reopen_reason`: TEXT NULLABLE (Mandatory audit explanation for reopening)
+  - `created_at`, `updated_at`: TIMESTAMPTZ NOT NULL
+  - Constraint: UNIQUE `(business_id, closing_date)` (Prevents duplicate closes for the same date)
 
 ---
 

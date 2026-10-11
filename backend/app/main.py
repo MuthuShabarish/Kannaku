@@ -8,7 +8,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import settings
 from app.database import engine, Base
-from app.routers import health, auth, onboarding
+from app.routers import health, auth, onboarding, categories, products, inventory, customers, sales, suppliers, purchases, expense_categories, expenses, cashbook, reports, cash_closing
 from app.schemas.common import ApiResponse, ApiErrorDetail
 
 # Configure logging
@@ -114,3 +114,16 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(onboarding.router)
+app.include_router(categories.router)
+app.include_router(products.router)
+app.include_router(inventory.router)
+app.include_router(customers.router)
+app.include_router(sales.router)
+app.include_router(suppliers.router)
+app.include_router(purchases.router)
+app.include_router(expense_categories.router)
+app.include_router(expenses.router)
+app.include_router(cashbook.router)
+app.include_router(reports.router)
+app.include_router(cash_closing.router)
+

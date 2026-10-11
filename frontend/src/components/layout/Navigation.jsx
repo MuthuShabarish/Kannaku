@@ -1,14 +1,22 @@
 import React from 'react';
 import { useI18n } from '../../context/I18nContext';
-import { LayoutDashboard, Settings, ShieldCheck, Compass } from 'lucide-react';
+import { LayoutDashboard, Settings, Compass, Package, ShoppingCart, Users, Truck, Building2, Receipt, BookOpen, BarChart3, LockKeyhole } from 'lucide-react';
 
 export function Sidebar({ currentTab, onSelectTab }) {
   const { t } = useI18n();
 
   const navItems = [
     { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
+    { id: 'pos', label: t('pos_billing'), icon: ShoppingCart },
+    { id: 'reports', label: t('reports_and_profit_title'), icon: BarChart3 },
+    { id: 'cash_closing', label: t('cash_closing_title'), icon: LockKeyhole },
+    { id: 'cashbook', label: t('cashbook_title'), icon: BookOpen },
+    { id: 'expenses', label: t('expenses_title'), icon: Receipt },
+    { id: 'purchases', label: t('purchases_title'), icon: Truck },
+    { id: 'suppliers', label: t('suppliers_title'), icon: Building2 },
+    { id: 'customers', label: t('customers_title'), icon: Users },
+    { id: 'inventory', label: t('products_and_inventory'), icon: Package },
     { id: 'onboarding', label: t('onboarding_title'), icon: Compass },
-    { id: 'foundation', label: 'Stage 1 Core', icon: ShieldCheck },
     { id: 'settings', label: t('settings'), icon: Settings }
   ];
 
@@ -59,8 +67,10 @@ export function BottomNav({ currentTab, onSelectTab }) {
 
   const navItems = [
     { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
-    { id: 'onboarding', label: 'Setup', icon: Compass },
-    { id: 'settings', label: t('settings'), icon: Settings }
+    { id: 'pos', label: 'POS', icon: ShoppingCart },
+    { id: 'purchases', label: 'Purchase', icon: Truck },
+    { id: 'suppliers', label: 'Suppliers', icon: Building2 },
+    { id: 'inventory', label: t('inventory'), icon: Package }
   ];
 
   return (

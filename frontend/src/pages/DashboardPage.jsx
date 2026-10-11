@@ -8,14 +8,19 @@ import {
   Building2,
   Coins,
   Database,
-  Server,
-  UserCheck,
-  CheckCircle2,
   Sparkles,
   ArrowRight,
   Compass,
   Sliders,
-  Layers
+  Package,
+  ShoppingCart,
+  Users,
+  Truck,
+  Receipt,
+  BookOpen,
+  CheckCircle2,
+  BarChart3,
+  LockKeyhole
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 
@@ -119,12 +124,36 @@ export function DashboardPage({ onNavigateTab }) {
               </div>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <Button variant="outline" onClick={() => onNavigateTab && onNavigateTab('settings')}>
-              <Sliders size={16} /> {t('settings')}
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <Button variant="primary" onClick={() => onNavigateTab && onNavigateTab('pos')}>
+              <ShoppingCart size={16} /> {t('pos_billing')}
             </Button>
-            <Button variant="ghost" onClick={() => onNavigateTab && onNavigateTab('onboarding')}>
-              <Compass size={16} /> {t('btn_revisit_onboarding')}
+            <Button variant="outline" onClick={() => onNavigateTab && onNavigateTab('reports')}>
+              <BarChart3 size={16} /> {t('reports_and_profit_title')}
+            </Button>
+            <Button variant="outline" onClick={() => onNavigateTab && onNavigateTab('cash_closing')}>
+              <LockKeyhole size={16} /> {t('cash_closing_title')}
+            </Button>
+            <Button variant="accent" onClick={() => onNavigateTab && onNavigateTab('purchases')}>
+              <Truck size={16} /> {t('purchases_title')}
+            </Button>
+            <Button variant="outline" onClick={() => onNavigateTab && onNavigateTab('expenses')}>
+              <Receipt size={16} /> {t('expenses_title')}
+            </Button>
+            <Button variant="outline" onClick={() => onNavigateTab && onNavigateTab('cashbook')}>
+              <BookOpen size={16} /> {t('cashbook_title')}
+            </Button>
+            <Button variant="outline" onClick={() => onNavigateTab && onNavigateTab('suppliers')}>
+              <Building2 size={16} /> {t('suppliers_title')}
+            </Button>
+            <Button variant="outline" onClick={() => onNavigateTab && onNavigateTab('customers')}>
+              <Users size={16} /> {t('customers_title')}
+            </Button>
+            <Button variant="outline" onClick={() => onNavigateTab && onNavigateTab('inventory')}>
+              <Package size={16} /> {t('products_and_inventory')}
+            </Button>
+            <Button variant="ghost" onClick={() => onNavigateTab && onNavigateTab('settings')}>
+              <Sliders size={16} /> {t('settings')}
             </Button>
           </div>
         </div>

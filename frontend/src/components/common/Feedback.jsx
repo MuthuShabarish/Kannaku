@@ -117,3 +117,55 @@ export function LoadingSpinner({ label = 'Loading...' }) {
     </div>
   );
 }
+
+export function Toast({ message, type = 'success', onClose }) {
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (onClose) onClose();
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '2rem',
+        right: '2rem',
+        backgroundColor: '#0f172a',
+        color: '#ffffff',
+        padding: '0.875rem 1.25rem',
+        borderRadius: 'var(--radius-md)',
+        boxShadow: 'var(--shadow-lg)',
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem',
+        fontSize: 'var(--font-size-sm)',
+        fontWeight: 600,
+        maxWidth: '400px',
+        animation: 'slideUp 0.2s ease',
+      }}
+    >
+      <CheckCircle size={18} color="var(--color-accent)" />
+      <span style={{ flex: 1 }}>{message}</span>
+      {onClose && (
+        <button
+          onClick={onClose}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#94a3b8',
+            cursor: 'pointer',
+            padding: 0,
+            fontSize: '1rem',
+            lineHeight: 1,
+          }}
+        >
+          ✕
+        </button>
+      )}
+    </div>
+  );
+}
+

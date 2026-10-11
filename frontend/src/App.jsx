@@ -7,10 +7,19 @@ import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { OnboardingWizard } from './components/onboarding/OnboardingWizard';
 import { SettingsPage } from './pages/SettingsPage';
+import { InventoryPage } from './pages/InventoryPage';
+import { POSPage } from './pages/POSPage';
+import { CustomersPage } from './pages/CustomersPage';
+import { PurchasesPage } from './pages/PurchasesPage';
+import { SuppliersPage } from './pages/SuppliersPage';
+import { ExpensesPage } from './pages/ExpensesPage';
+import { CashbookPage } from './pages/CashbookPage';
+import { ReportsPage } from './pages/ReportsPage';
+import { CashClosingPage } from './pages/CashClosingPage';
 import { LoadingSpinner } from './components/common/Feedback';
 
 function AppContent() {
-  const { isAuthenticated, isLoading, business } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [currentTab, setCurrentTab] = useState('dashboard');
 
   if (isLoading) {
@@ -31,7 +40,25 @@ function AppContent() {
       <div className="app-layout-main">
         <Sidebar currentTab={currentTab} onSelectTab={setCurrentTab} />
         <main className="app-content" id="main-content">
-          {currentTab === 'onboarding' ? (
+          {currentTab === 'pos' ? (
+            <POSPage />
+          ) : currentTab === 'reports' ? (
+            <ReportsPage />
+          ) : currentTab === 'cash_closing' ? (
+            <CashClosingPage />
+          ) : currentTab === 'customers' ? (
+            <CustomersPage />
+          ) : currentTab === 'purchases' ? (
+            <PurchasesPage />
+          ) : currentTab === 'suppliers' ? (
+            <SuppliersPage />
+          ) : currentTab === 'expenses' ? (
+            <ExpensesPage />
+          ) : currentTab === 'cashbook' ? (
+            <CashbookPage />
+          ) : currentTab === 'inventory' ? (
+            <InventoryPage />
+          ) : currentTab === 'onboarding' ? (
             <OnboardingWizard
               onComplete={() => setCurrentTab('dashboard')}
               onExit={() => setCurrentTab('dashboard')}
