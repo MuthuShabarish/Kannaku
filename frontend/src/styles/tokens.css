@@ -1,0 +1,52 @@
+:root {
+  /* Brand Identity - Kanakku (கணக்கு) Trust, Clarity, Financial Precision */
+  --color-primary: #1e3a8a;       /* Deep Navy */
+  --color-primary-light: #2563eb; /* Cobalt Blue */
+  --color-primary-dark: #172554;  /* Midnight */
+  --color-primary-soft: #eff6ff;  /* Soft Blue tint */
+
+  --color-accent: #059669;        /* Currency Emerald (₹) */
+  --color-accent-soft: #ecfdf5;   /* Mint tint */
+
+  --color-warning: #d97706;       /* Amber */
+  --color-danger: #dc2626;        /* Crimson */
+  --color-danger-soft: #fef2f2;
+
+  /* Surfaces & Backgrounds */
+  --color-bg-app: #f8fafc;        /* Slate 50 */
+  --color-bg-surface: #ffffff;    /* Card & Modal surface */
+  --color-bg-subtle: #f1f5f9;     /* Slate 100 */
+
+  /* Text & Contrast */
+  --color-text-main: #0f172a;     /* Slate 900 (High contrast) */
+  --color-text-muted: #475569;    /* Slate 600 */
+  --color-text-subtle: #64748b;   /* Slate 500 */
+  --color-text-inverse: #ffffff;
+
+  /* Borders & Dividers */
+  --color-border: #e2e8f0;        /* Slate 200 */
+  --color-border-focus: #2563eb;  /* Focus ring */
+
+  /* Touch & Ergonomics (Micro-Shopkeeper Accessible Sizing) */
+  --touch-target-min: 48px;
+  --touch-target-large: 54px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Mukta Malar", "Noto Sans Tamil", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
